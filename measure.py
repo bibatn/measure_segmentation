@@ -51,6 +51,7 @@ test_transforms = transforms.compose([
 valid_dataset = DatasetNami(nami_seg_folder, valid_folders, classes=CLASSES, augmentation=test_transforms, full_road=True)
 
 input_name = session.get_inputs()[0].name
+shape = session.get_outputs()[0].shape
 sum = 0
 io_binding = session.io_binding()
 for i in tqdm(range(len(valid_dataset))):
@@ -58,7 +59,17 @@ for i in tqdm(range(len(valid_dataset))):
     # X_ortvalue = onnxruntime.OrtValue.ortvalue_from_numpy(torch.unsqueeze(img_mask['image'], 0).numpy(), 'cuda', 0)
     X = torch.unsqueeze(img_mask['image'], 0).contiguous()
     io_binding.bind_input(name='input', device_type='cuda', device_id=0, element_type=np.float32, shape=tuple(X.shape), buffer_ptr=X.data_ptr())
-    io_binding.bind_output('output')
+    Y_shape = [1, 11, 512, 1024]  # You need to specify the output PyTorch tensor shape
+    Y_tensor = torch.empty(Y_shape, dtype=torch.float32, device='cuda:0').contiguous()
+    io_binding.bind_output(
+        name='output',
+        device_type='cuda',
+        device_id=0,
+        element_type=np.float32,
+        shape=tuple(Y_tensor.shape),
+        buffer_ptr=Y_tensor.data_ptr(),
+    )
+    # io_binding.bind_output('output')
     session.run_with_iobinding(io_binding)
     outputs = io_binding.copy_outputs_to_cpu()
     # xx = torch.unsqueeze(img_mask['image'], 0).numpy()  # На вход нужна размерность 1,3,512,1024. (img_mask['image'] tensor)
