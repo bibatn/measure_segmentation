@@ -26,18 +26,18 @@ CLASSES = ['person',
 
 valid_folders = [
 '!!180216_12_ant_CVAT',
-'!!180226_13_kol_CVAT',
-'!!180226_15_ush_CVAT',
-'!!180329_14_ant_CVAT',
-'!!180405_11_ant_CVAT',
-'!!190408_14_kol_CVAT',
-'!!180510_11_ush_CVAT',
-'!!180618_10_anu_CVAT',
-'!!180723_13_ush_CVAT',
-'!!190712_08_ush_CVAT'
+# '!!180226_13_kol_CVAT',
+# '!!180226_15_ush_CVAT',
+# '!!180329_14_ant_CVAT',
+# '!!180405_11_ant_CVAT',
+# '!!190408_14_kol_CVAT',
+# '!!180510_11_ush_CVAT',
+# '!!180618_10_anu_CVAT',
+# '!!180723_13_ush_CVAT',
+# '!!190712_08_ush_CVAT'
 ]
 
-nami_seg_folder = '/mnt/work/krapukhin/projects/segmentation/datasets/DB_segmentation_copy_121121'
+nami_seg_folder = '/home/khabibulin/DATA'
 
 print(ort.get_available_providers())
 print(ort.get_device())
