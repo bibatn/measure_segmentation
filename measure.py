@@ -57,18 +57,13 @@ io_binding = session.io_binding()
 for i in tqdm(range(len(valid_dataset))):
     img_mask = valid_dataset[i]
     # X_ortvalue = onnxruntime.OrtValue.ortvalue_from_numpy(torch.unsqueeze(img_mask['image'], 0).numpy(), 'cuda', 0)
-    X = torch.unsqueeze(img_mask['image'], 0).contiguous()
-    io_binding.bind_input(name='input', device_type='cuda', device_id=0, element_type=np.float32, shape=tuple(X.shape), buffer_ptr=X.data_ptr())
-    Y_shape = [1, 11, 512, 1024]  # You need to specify the output PyTorch tensor shape
-    Y_tensor = torch.empty(Y_shape, dtype=torch.float32, device='cuda:0').contiguous()
-    io_binding.bind_output(
-        name='output',
-        device_type='cuda',
-        device_id=0,
-        element_type=np.float32,
-        shape=tuple(Y_tensor.shape),
-        buffer_ptr=Y_tensor.data_ptr(),
-    )
+    X = torch.unsqueeze(img_mask['image'], 0).numpy()
+    X_ortvalue = onnxruntime.OrtValue.ortvalue_from_numpy(X, 'cuda', 0)
+
+    io_binding.bind_input(name='input', device_type='cuda', device_id=0, element_type=np.float32,
+                          shape=X_ortvalue.shape(), buffer_ptr=X_ortvalue.data_ptr())
+    io_binding.bind_output('output')
+
     # io_binding.bind_output('output')
     session.run_with_iobinding(io_binding)
     outputs = io_binding.copy_outputs_to_cpu()
